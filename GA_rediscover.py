@@ -8,10 +8,8 @@ Created on Sat May 23 18:17:31 2020
 @author: akshat
 """
 import selfies
-import os
 import numpy as np 
 import random
-from random import randrange
 from rdkit.Chem import MolFromSmiles as smi2mol
 from rdkit.Chem import MolToSmiles as mol2smi
 from rdkit import Chem
@@ -22,6 +20,14 @@ from rdkit import RDLogger
 RDLogger.DisableLog('rdApp.*')
 
 def get_ECFP4(mol):
+    ''' Return rdkit ECFP4 fingerprint object for mol
+
+    Parameters: 
+    mol (rdkit.Chem.rdchem.Mol) : RdKit mol object  
+
+    Returns: 
+    rdkit ECFP4 fingerprint object for mol
+    '''
     return AllChem.GetMorganFingerprint(mol, 2)
 
 
@@ -45,7 +51,7 @@ def sanitize_smiles(smi):
         return (None, None, False)
 
 def mutate_selfie(selfie, max_molecules_len, write_fail_cases=False):
-    '''Return a mutated selfie string
+    '''Return a mutated selfie string (only one mutation on slefie is performed)
     
     Mutations are done until a valid molecule is obtained 
     Rules of mutation: With a 50% propbabily, either: 
@@ -142,20 +148,31 @@ def get_selfie_chars(selfie):
     return chars_selfie
 
 
-def get_reward(celebx_selfie_chars, starting_selfie_chars): 
+def get_reward(selfie_A_chars, selfie_B_chars): 
+    '''Return the levenshtein similarity between the selfies characters in 'selfie_A_chars' & 'selfie_B_chars'
+
+    
+    Parameters:
+    selfie_A_chars (list)  : list of characters of a single SELFIES
+    selfie_B_chars (list)  : list of characters of a single SELFIES
+    
+    Returns:
+    reward (int): Levenshtein similarity between the two SELFIES
+    '''
     reward = 0
-    iter_num = max(len(celebx_selfie_chars), len(starting_selfie_chars)) # Larger of the selfie chars to iterate over 
+    iter_num = max(len(selfie_A_chars), len(selfie_B_chars)) # Larger of the selfie chars to iterate over 
 
     for i in range(iter_num): 
         
-        if i+1 > len(celebx_selfie_chars) or i+1 > len(starting_selfie_chars): 
+        if i+1 > len(selfie_A_chars) or i+1 > len(selfie_B_chars): 
             return reward
             
-        if celebx_selfie_chars[i] == starting_selfie_chars[i]: 
+        if selfie_A_chars[i] == selfie_B_chars[i]: 
             reward += 1
             
     return reward
 
+# Executable code for EXPERIMENT C (Three different choices): 
 
 # TIOTOXENE RUN
 # N                  = 20  # Number of runs
@@ -263,7 +280,6 @@ for i in range(N):
             break
 
 
-# Make some graphs: 
 import matplotlib.pyplot as plt
 x = [i+1 for i in range(max([len(x) for x in simlr_path_collect]))]
 
@@ -281,14 +297,6 @@ for ni in range(len(color_values)):
 cm = [colors(x) for x in color_values]
 
 
-
-# self.cms = {'gist_rainbow': plt.cm.gist_rainbow,
-#             'gist_ncar': plt.cm.gist_ncar,
-#             'nipy_spectral': plt.cm.nipy_spectral,
-#             'gnuplot2': plt.cm.gnuplot2,
-#             'jet': plt.cm.jet,
-#             'hsv': plt.cm.hsv} # dictionary of color maps
-
 for i,simlr_path in enumerate(simlr_path_collect): 
     plt.plot([i+1 for i in range(len(simlr_path))], simlr_path, marker='', color=cm[i], linewidth=2.5, alpha=0.5)
 plt.title('Rediscovering '+starting_mol_name, fontsize=20, fontweight=0, color='black', loc='left')
@@ -297,7 +305,6 @@ plt.title('Rediscovering '+starting_mol_name, fontsize=20, fontweight=0, color='
 plt.xlabel('Generation')
 plt.ylabel('ECPF4 Similarity')
 plt.savefig('Celecoxib_run.png', dpi=196, bbox_inches='tight')
-# plt.savefig(svg_file_name, format='svg', dpi=1200)
 
 plt.show()
 
