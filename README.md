@@ -4,7 +4,7 @@ This repository contains code for the paper: [Beyond Generative Models: Superfas
 
 <img align="center" src="./readme_docs/fig_main_algo.png"/>
 
-## Prerequisites
+## Prerequisites: 
 For cloning the repository, please have a look at the Branch Navigator section.  
 
 Before running the code, please ensure you have the following:
@@ -14,9 +14,10 @@ Before running the code, please ensure you have the following:
 - [Python 3.0 or up](https://www.python.org/download/releases/3.0/)
 - [numpy](https://pypi.org/project/numpy/)
 
+## Experiment Navigator: 
 
-
+[Experiment B:](https://github.com/aspuru-guzik-group/stoned-selfies/blob/main/sim_search.py) Formation of Local Chemical Spaces 
 
 ## Questions, problems?
 Make a github issue 😄. Please be as clear and descriptive as possible. Please feel free to reach
-out in person: (akshat[DOT]nigam[AT]mail[DOT]utoronto[DOT]ca & pascal[DOT]friederich[AT]kit[DOT]edu)
+out in person: (akshat[DOT]nigam[AT]mail[DOT]utoronto[DOT]ca)
