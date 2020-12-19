@@ -2,7 +2,7 @@
 This repository contains code for the paper: [Beyond Generative Models: Superfast Traversal, Optimization, Novelty, Exploration and Discovery (STONED) Algorithm for Molecules using SELFIES](https://chemrxiv.org/articles/preprint/Beyond_Generative_Models_Superfast_Traversal_Optimization_Novelty_Exploration_and_Discovery_STONED_Algorithm_for_Molecules_using_SELFIES/13383266). 
 
 
-<img align="center" src="./readme_docs/fi_main_algo.png"/>
+<img align="center" src="./readme_docs/fig_main_algo.png"/>
 
 ## Prerequisites
 For cloning the repository, please have a look at the Branch Navigator section.  
