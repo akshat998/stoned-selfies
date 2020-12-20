@@ -16,14 +16,14 @@ from rdkit import RDLogger
 RDLogger.DisableLog('rdApp.*')
 
 def randomize_smiles(mol):
-    """Returns a random (dearomatized) SMILES given an rdkit mol object of a molecule.
+    '''Returns a random (dearomatized) SMILES given an rdkit mol object of a molecule.
 
     Parameters:
     mol (rdkit.Chem.rdchem.Mol) :  RdKit mol object (None if invalid smile string smi)
     
     Returns:
     mol (rdkit.Chem.rdchem.Mol) : RdKit mol object  (None if invalid smile string smi)
-    """
+    '''
     if not mol:
         return None
 
@@ -235,6 +235,17 @@ def get_mutated_SELFIES(selfies_ls, num_mutations):
 
 
 def get_fp_scores(smiles_back, target_smi, fp_type): 
+    '''Calculate the Tanimoto fingerprint (using fp_type fingerint) similarity between a list 
+       of SMILES and a known target structure (target_smi). 
+       
+    Parameters:
+    smiles_back   (list) : A list of valid SMILES strings 
+    target_smi (string)  : A valid SMILES string. Each smile in 'smiles_back' will be compared to this stucture
+    fp_type (string)     : Type of fingerprint  (choices: AP/PHCO/BPF,BTF,PAT,ECFP4,ECFP6,FCFP4,FCFP6) 
+    
+    Returns: 
+    smiles_back_scores (list of floats) : List of fingerprint similarities
+    '''
     smiles_back_scores = []
     target    = Chem.MolFromSmiles(target_smi)
 
