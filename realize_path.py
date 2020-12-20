@@ -72,6 +72,18 @@ def get_fp_scores(smiles_back, target_smi):
 
 
 def get_selfie_chars(selfie):
+    '''Obtain a list of all selfie characters in string selfie
+    
+    Parameters: 
+    selfie (string) : A selfie string - representing a molecule 
+    
+    Example: 
+    >>> get_selfie_chars('[C][=C][C][=C][C][=C][Ring1][Branch1_1]')
+    ['[C]', '[=C]', '[C]', '[=C]', '[C]', '[=C]', '[Ring1]', '[Branch1_1]']
+    
+    Returns:
+    chars_selfie: list of selfie characters present in molecule selfie
+    '''
     chars_selfie = [] # A list of all SELFIE sybols from string selfie
     while selfie != '':
         chars_selfie.append(selfie[selfie.find('['): selfie.find(']')+1])
@@ -80,6 +92,14 @@ def get_selfie_chars(selfie):
 
 
 def randomize_smiles(mol):
+    '''Returns a random (dearomatized) SMILES given an rdkit mol object of a molecule.
+
+    Parameters:
+    mol (rdkit.Chem.rdchem.Mol) :  RdKit mol object (None if invalid smile string smi)
+    
+    Returns:
+    mol (rdkit.Chem.rdchem.Mol) : RdKit mol object  (None if invalid smile string smi)
+    '''
     if not mol:
         return None
 
@@ -89,6 +109,15 @@ def randomize_smiles(mol):
 
 
 def get_random_smiles(smi, num_random_samples): 
+    ''' Obtain 'num_random_samples' non-unique SMILES orderings of smi
+    
+    Parameters:
+    smi (string)            : Input SMILES string (needs to be a valid molecule)
+    num_random_samples (int): Number fo unique different SMILES orderings to form 
+    
+    Returns:
+    randomized_smile_orderings (list) : list of SMILES strings
+    '''
     mol = Chem.MolFromSmiles(smi)
     if mol == None: 
         raise Exception('Invalid starting structure encountered')
@@ -98,9 +127,18 @@ def get_random_smiles(smi, num_random_samples):
 
 
 def obtain_path(starting_smile, target_smile, filter_path=False): 
-    '''
-    USAGE: 
-        path_smiles, path_fp_scores, smiles_path, filtered_path_score = obtain_path(starting_smile, target_smile, filter_path=False)
+    ''' Obtain a path/chemical path from starting_smile to target_smile
+    
+    Parameters:
+    starting_smile (string) : SMILES string (needs to be a valid molecule)
+    target_smile (int)      : SMILES string (needs to be a valid molecule)
+    filter_path (bool)      : If True, a chemical path is returned, else only a path
+    
+    Returns:
+    path_smiles (list)                  : A list of smiles in path between starting_smile & target_smile
+    path_fp_scores (list of floats)     : Fingerprint similarity to 'target_smile' for each smiles in path_smiles
+    smiles_path (list)                  : A list of smiles in CHEMICAL path between starting_smile & target_smile (if filter_path==False, then empty)
+    filtered_path_score (list of floats): Fingerprint similarity to 'target_smile' for each smiles in smiles_path (if filter_path==False, then empty)
     '''
     starting_selfie = encoder(starting_smile)
     target_selfie   = encoder(target_smile)
@@ -164,6 +202,19 @@ def obtain_path(starting_smile, target_smile, filter_path=False):
 
 
 def get_compr_paths(starting_smile, target_smile, num_tries, num_random_samples, collect_bidirectional):
+    ''' Obtaining multiple paths/chemical paths from starting_smile to target_smile. 
+    
+    Parameters:
+    starting_smile (string)     : SMILES string (needs to be a valid molecule)
+    target_smile (int)          : SMILES string (needs to be a valid molecule)
+    num_tries (int)             : Number of path/chemical path attempts between the exact same smiles
+    num_random_samples (int)    : Number of different SMILES string orderings to conside for starting_smile & target_smile 
+    collect_bidirectional (bool): If true, forms paths from target_smiles-> target_smiles (doubles number of paths)
+    
+    Returns:
+    smiles_paths_dir1 (list): list paths containing smiles in path between starting_smile -> target_smile
+    smiles_paths_dir2 (list): list paths containing smiles in path between target_smile -> starting_smile
+    '''
     starting_smile_rand_ord = get_random_smiles(starting_smile, num_random_samples=num_random_samples)
     target_smile_rand_ord   = get_random_smiles(target_smile,   num_random_samples=num_random_samples)
     
@@ -175,7 +226,7 @@ def get_compr_paths(starting_smile, target_smile, num_tries, num_random_samples,
                 raise Exception('Invalid structures')
                 
             for _ in range(num_tries): 
-                path, _, _, _ = obtain_path(smi_start, smi_target, filter_path=False)
+                path, _, _, _ = obtain_path(smi_start, smi_target, filter_path=True)
                 smiles_paths_dir1.append(path)
     
     smiles_paths_dir2 = [] # All paths from starting_smile -> target_smile
@@ -190,76 +241,11 @@ def get_compr_paths(starting_smile, target_smile, num_tries, num_random_samples,
                     raise Exception('Invalid structures')
         
                 for _ in range(num_tries): 
-                    path, _, _, _ = obtain_path(smi_start, smi_target, filter_path=False)
+                    path, _, _, _ = obtain_path(smi_start, smi_target, filter_path=True)
                     smiles_paths_dir2.append(path)
                     
     return smiles_paths_dir1, smiles_paths_dir2
 
-def create_plot(scores_target, scores_start, bar_, fname, x_axis_nm='Target Similarity', y_axis_nm='Starting Similarity'): 
-    '''
-    Can be done for: 
-        1. Camphor, Methanol 
-        2. Tadalafil, Sildenafil
-    '''
-    fig, ax = plt.subplots()
-    cm = plt.cm.get_cmap('winter')
-    
-    sc = ax.scatter(scores_target, scores_start, c=bar_, cmap=cm)
-
-    ax.set_xlabel(x_axis_nm, fontsize=15)
-    ax.set_ylabel(y_axis_nm, fontsize=15)
-    
-    ax.grid(True)
-    plt.colorbar(sc)
-    fig.tight_layout()
-    plt.show()
-    # plt.savefig(fname)
-
-
-if __name__ == '__main__': 
-
-    starting_smile        = 'CN1CC(=O)N2C(C1=O)CC3=C(C2C4=CC5=C(C=C4)OCO5)NC6=CC=CC=C36'       # Tadalafil
-    target_smile          = 'CCCC1=NN(C2=C1N=C(NC2=O)C3=C(C=CC(=C3)S(=O)(=O)N4CCN(CC4)C)OCC)C' # Sildenafil 
-    
-    # starting_smile   = 'CO'                 # Methanol
-    # target_smile = 'CC1(C2CCC1(C(=O)C2)C)C' # Camphor
-    
-    num_tries             = 5
-    num_random_samples    = 5
-    collect_bidirectional = False # Doubles the number of paths: source->target & target->source
-    
-    
-    smiles_paths_dir1, smiles_paths_dir2 = get_compr_paths(starting_smile, target_smile, num_tries, num_random_samples, collect_bidirectional)
-    
-    
-    # Find the median molecule & plot: 
-    all_smiles_dir_1 = [item for sublist in smiles_paths_dir1 for item in sublist] # all the smile string of dir1
-    all_smiles_dir_2 = [item for sublist in smiles_paths_dir2 for item in sublist] # all the smile string of dir2
-    
-    all_smiles = all_smiles_dir_1 + all_smiles_dir_2
-    
-    scores_start  = get_fp_scores(all_smiles, starting_smile)   # similarity to target
-    scores_target = get_fp_scores(all_smiles, target_smile)     # similarity to starting structure
-    
-    data      = np.array([scores_target, scores_start])
-    avg_score = np.average(data, axis=0)
-    better_score = avg_score - (np.abs(data[0] - data[1]))
-    better_score = (better_score + 0.5) / 2 # SCALING BETWEEN 0-1
-
-    best_idx = np.argmax(better_score) 
-    # best_idx = np.argmax(avg_score)
-    best_smi_ = all_smiles[best_idx]
-    print('    Sim. To Startting: ', scores_start[best_idx])
-    print('    Sim. To Target: ',    scores_target[best_idx])
-    print('    Avg. Sim.: ',         avg_score[best_idx])
-    print('    Better. Score.: ',    better_score[best_idx])
-    
-    top_smiles_idx  = better_score.argsort()[-5:][::-1]
-    top_smiles = [all_smiles[x] for x in top_smiles_idx]
-    top_scores = [better_score[x] for x in top_smiles_idx]
-        
-    create_plot(scores_target, scores_start, avg_score.tolist(), './median_plots/avg_camphor.svg','Tadalafil Similarity', 'Methanol Similarity')
-    create_plot(scores_target, scores_start, better_score.tolist(), './median_plots/better_camphor.svg', 'Sildenafil Similarity', 'Methanol Similarity')
 
 
 

@@ -152,7 +152,7 @@ def get_joint_sim(smi_list, triplet):
     
     z = np.polyfit([-2/3, 0.0, 1.0], [-1.0 , 0.0, 1.0], 3) # Pollynomial coefficients for Equation 1
 
-    data         = np.array([scores_t1, scores_t2, scores_t3])
+    data      = np.array([scores_t1, scores_t2, scores_t3])
     sim_score = np.average(data, axis=0) - (np.max(data, axis=0) - np.min(data, axis=0))
     sim_score = (z[0]*(sim_score**3)) + (z[1]*(sim_score**2)) + (z[2]*(sim_score)) 
     

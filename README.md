@@ -17,7 +17,8 @@ Before running the code, please ensure you have the following:
 ## Experiment Navigator: 
 
 - [Experiment B:](https://github.com/aspuru-guzik-group/stoned-selfies/blob/main/sim_search.py) Formation of Local Chemical Spaces 
-- [Experiment C:](https://github.com/aspuru-guzik-group/stoned-selfies/blob/main/sim_search.py) Chemical Paths and Rediscovery (with a GA)
+- [Experiment C:](https://github.com/aspuru-guzik-group/stoned-selfies/blob/main/GA_rediscover.py) Chemical Paths and Rediscovery (with a GA)
+- [Experiment D:](https://github.com/aspuru-guzik-group/stoned-selfies/blob/main/path_logP_QED.py) Interpolation via Chemical Path formation
 - [Experiment E:](https://github.com/aspuru-guzik-group/stoned-selfies/blob/main/generalized_path.py) Median Molecules for Photovoltaics (obtaining median molecules)
 
 ## Questions, problems?
